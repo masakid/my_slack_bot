@@ -143,6 +143,52 @@ controller.hears(['(.*)って呼んで', '君の名前は(.*)'], 'direct_message
     });
 });
 
+//メモ　会話
+controller.hears(['メモ','メモして'], ['direct_mention'],function(bot, message){
+  bot.startConversation(message, function(err, convo){
+    convo.ask(
+      '憶えてほしいことはありますか。\nある場合はそれを、ない場合はnoと言ってください。',
+      [
+        {
+          pattern: bot.utterances.no,
+          callback: function(response, convo){
+            convo.say('メモ完了');
+            convo.next();
+          }
+        },
+        {
+          default : true,
+          callback: function(response , convo){
+            var item = response.text
+            controller.storage.channels.get(message.user, function(err, channel_data){
+              if(channel_data && channel_data.name){
+                var name_arr = channel_data.name.split(',');
+                name_arr.push(item);
+                channel_data = {
+                  id : message.user,
+                  name : name_arr.join(',')
+                }
+              } else {
+                channel_data = {
+                  id: message.user,
+                  name: item
+                };
+              }
+              controller.storage.channels.save(channel_data, function(err, id){
+                 bot.reply(message, item + 'を憶えました！');
+                 convo.say('いまこれ憶えてる。');
+                 convo.say(channel_data.name);
+              });
+            });
+            convo.repeat();
+            convo.next();
+          }
+        }
+      ]);
+    });
+});
+
+
 //メモする
 controller.hears(['memo (.*)','憶えて (.*)'], 'direct_message,direct_mention,mention', function(bot, message)
 {
@@ -162,7 +208,7 @@ controller.hears(['memo (.*)','憶えて (.*)'], 'direct_message,direct_mention,
       };
     }
     controller.storage.channels.save(channel_data, function(err, id){
-       bot.reply(message, item + '覚えました！');
+       bot.reply(message, item + '憶えました！');
     });
   });
 });
