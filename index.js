@@ -20,7 +20,7 @@ var bot = controller.spawn({
     }
     //お天気の通知
     new CronJob({
-      cronTime: '* 7 * * ',
+      cronTime: '* 7 * * *',
       onTick: function() {
         var url = 'http://api.openweathermap.org/data/2.5/weather?units=metric&q=Tokyo,jp&appid=9e3c4385a9b267abf38a1189d7e8047b';
         var request = require('request');
@@ -38,7 +38,6 @@ var bot = controller.spawn({
             reply_message += '最高気温は' + main['temp_max'] + '℃\n';
             reply_message += '最低気温は' + main['temp_min'] + '℃\n';
             reply_message += '<http://openweathermap.org/img/w/' + iconId + '.png | > \n';
-
             bot.say({
               channel: 'random',
               text: reply_message,
@@ -93,9 +92,7 @@ controller.hears(['きみの名前', 'あなたは誰'], 'direct_message,direct_
                                 }
                             }
                         ]);
-
                         convo.next();
-
                     }, {'key': 'nickname'}); // store the results in a field called nickname
 
                     convo.on('end', function(convo) {
@@ -113,9 +110,6 @@ controller.hears(['きみの名前', 'あなたは誰'], 'direct_message,direct_
                                     bot.reply(message, 'Got it. I will call you ' + user.name + ' from now on.');
                                 });
                             });
-
-
-
                         } else {
                             // this happens if the conversation ended prematurely for some reason
                             bot.reply(message, 'OK, nevermind!');
