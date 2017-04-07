@@ -20,7 +20,7 @@ var bot = controller.spawn({
     }
     //お天気の通知
     new CronJob({
-      cronTime: '* 7 * * *',
+      cronTime: '0 7 * * *',
       onTick: function() {
         var url = 'http://api.openweathermap.org/data/2.5/weather?units=metric&q=Tokyo,jp&appid=9e3c4385a9b267abf38a1189d7e8047b';
         var request = require('request');
